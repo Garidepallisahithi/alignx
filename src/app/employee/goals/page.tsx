@@ -53,7 +53,7 @@ export default function GoalPage() {
 
     (total, goal) => {
 
-      return total + parseInt(goal.weightage || 0);
+      return total + parseInt(String(goal.weightage || 0));
 
     },
 
@@ -318,7 +318,7 @@ export default function GoalPage() {
                     onChange={(e) => {
                       const updatedGoals = [...goals];
                       updatedGoals[index].weightage =
-                        parseInt(e.target.value) || 0;
+                        String(parseInt(e.target.value) || 0);
                       setGoals(updatedGoals);
                     }}
                   />
