@@ -22,7 +22,7 @@ export default function LoginPage() {
 
         <div className="space-y-4">
 
-          {/* Employee Login */}
+          {/* Employee */}
 
           <button
 
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
           </button>
 
-          {/* Manager Login */}
+          {/* Manager */}
 
           <button
 
@@ -90,7 +90,7 @@ export default function LoginPage() {
 
           </button>
 
-          {/* Admin Login */}
+          {/* Admin */}
 
           <button
 
