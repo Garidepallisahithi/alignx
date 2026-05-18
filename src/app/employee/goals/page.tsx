@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function GoalPage() {
 
+  const [user, setUser] = useState<any>(null);
+
   const [goals, setGoals] = useState([
+
     {
       title: "",
       description: "",
@@ -12,17 +15,36 @@ export default function GoalPage() {
       weightage: "",
       uom: "MIN",
     },
+
   ]);
+
+  useEffect(() => {
+
+    const storedUser =
+      localStorage.getItem("user");
+
+    if (storedUser) {
+
+      setUser(JSON.parse(storedUser));
+
+    }
+
+  }, []);
 
   const addGoal = () => {
 
     if (goals.length >= 8) {
+
       alert("Maximum 8 goals allowed");
+
       return;
+
     }
 
     setGoals([
+
       ...goals,
+
       {
         title: "",
         description: "",
@@ -30,30 +52,40 @@ export default function GoalPage() {
         weightage: "",
         uom: "MIN",
       },
+
     ]);
+
   };
 
   const updateGoal = (
+
     index: number,
+
     field: string,
+
     value: string
+
   ) => {
 
     const updatedGoals = [...goals];
 
     updatedGoals[index] = {
+
       ...updatedGoals[index],
+
       [field]: value,
+
     };
 
     setGoals(updatedGoals);
+
   };
 
   const totalWeightage = goals.reduce(
 
     (total, goal) => {
 
-      return total + parseInt(String(goal.weightage || 0));
+      return total + Number(goal.weightage || 0);
 
     },
 
@@ -65,97 +97,132 @@ export default function GoalPage() {
     totalWeightage === 100;
 
   const hasInvalidGoal = goals.some(
+
     (goal) =>
+
       !goal.title ||
+
       !goal.description ||
+
       !goal.target ||
+
       !goal.weightage ||
+
       Number(goal.weightage) < 10
+
   );
 
   const canSubmit =
     isWeightValid &&
     !hasInvalidGoal;
 
-  
   const handleSubmit = async () => {
 
-  if (!isWeightValid) {
-    alert("Total weightage must equal 100%");
-    return;
-  }
+    if (!user?.id) {
 
-  const invalidGoal = goals.find(
-    (goal) =>
-      Number(goal.weightage) < 10
-  );
+      alert(
+        "Session not found. Please login again."
+      );
 
-  if (invalidGoal) {
-    alert("Each goal must have minimum 10% weightage");
-    return;
-  }
+      return;
 
-  // GET CURRENT LOGGED-IN USER
-  const storedUser = localStorage.getItem("user");
+    }
 
-  if (!storedUser) {
-    alert("User session not found. Please login again.");
-    return;
-  }
+    if (!isWeightValid) {
 
-  const user = JSON.parse(storedUser);
+      alert(
+        "Total weightage must equal 100%"
+      );
 
-  try {
+      return;
 
-    const response = await fetch(
-      "/api/goals",
-      {
-        method: "POST",
+    }
 
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const invalidGoal = goals.find(
 
-        body: JSON.stringify({
-          goals,
-          userId: user.id,
-        }),
-      }
+      (goal) =>
+        Number(goal.weightage) < 10
+
     );
 
-    const data = await response.json();
+    if (invalidGoal) {
 
-    if (data.success) {
+      alert(
+        "Each goal must have minimum 10% weightage"
+      );
 
-      alert("Goals submitted successfully!");
+      return;
 
-      setGoals([
+    }
+
+    try {
+
+      const response = await fetch(
+
+        "/api/goals",
+
         {
-          title: "",
-          description: "",
-          target: "",
-          weightage: "",
-          uom: "MIN",
-        },
-      ]);
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+
+            goals,
+
+            userId: user.id,
+
+          }),
+
+        }
+
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+
+        alert(
+          "Goals submitted successfully!"
+        );
+
+        setGoals([
+
+          {
+            title: "",
+            description: "",
+            target: "",
+            weightage: "",
+            uom: "MIN",
+          },
+
+        ]);
+
+      }
+
+      else {
+
+        alert(
+          data.message ||
+          "Failed to submit goals"
+        );
+
+      }
 
     }
 
-    else {
+    catch (error) {
 
-      alert("Failed to submit goals");
+      console.log(error);
+
+      alert("Something went wrong");
 
     }
 
-  } catch (error) {
-
-    console.log(error);
-
-    alert("Something went wrong");
-
-  }
-
-};
+  };
 
   return (
 
@@ -177,7 +244,7 @@ export default function GoalPage() {
 
         </div>
 
-        {/* WEIGHT CARD */}
+        {/* WEIGHTAGE CARD */}
 
         <div className="bg-white rounded-3xl shadow-md p-6 mb-10 border border-gray-100">
 
@@ -194,9 +261,11 @@ export default function GoalPage() {
               </p>
 
               {!isWeightValid && (
+
                 <p className="text-red-500 mt-3 font-medium">
                   Total weightage must equal exactly 100%
                 </p>
+
               )}
 
             </div>
@@ -208,7 +277,9 @@ export default function GoalPage() {
                   : "text-red-500"
               }`}
             >
+
               {totalWeightage}/100
+
             </div>
 
           </div>
@@ -232,10 +303,10 @@ export default function GoalPage() {
                   Goal {index + 1}
                 </h2>
 
-                <div
-                  className="inline-flex items-center justify-center bg-black text-white px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                >
+                <div className="inline-flex items-center justify-center bg-black text-white px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap">
+
                   Performance Goal
+
                 </div>
 
               </div>
@@ -256,7 +327,11 @@ export default function GoalPage() {
                     className="w-full border border-gray-300 bg-gray-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-black"
                     value={goal.title}
                     onChange={(e) =>
-                      updateGoal(index, "title", e.target.value)
+                      updateGoal(
+                        index,
+                        "title",
+                        e.target.value
+                      )
                     }
                   />
 
@@ -276,7 +351,11 @@ export default function GoalPage() {
                     className="w-full border border-gray-300 bg-gray-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-black"
                     value={goal.description}
                     onChange={(e) =>
-                      updateGoal(index, "description", e.target.value)
+                      updateGoal(
+                        index,
+                        "description",
+                        e.target.value
+                      )
                     }
                   />
 
@@ -296,7 +375,11 @@ export default function GoalPage() {
                     className="w-full border border-gray-300 bg-gray-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-black"
                     value={goal.target}
                     onChange={(e) =>
-                      updateGoal(index, "target", e.target.value)
+                      updateGoal(
+                        index,
+                        "target",
+                        e.target.value
+                      )
                     }
                   />
 
@@ -316,18 +399,24 @@ export default function GoalPage() {
                     className="w-full border border-gray-300 bg-gray-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-black"
                     value={goal.weightage}
                     onChange={(e) => {
+
                       const updatedGoals = [...goals];
+
                       updatedGoals[index].weightage =
-                        String(parseInt(e.target.value) || 0);
+                        e.target.value;
+
                       setGoals(updatedGoals);
+
                     }}
                   />
 
                   {goal.weightage &&
                     Number(goal.weightage) < 10 && (
+
                       <p className="text-red-500 text-sm mt-2">
                         Minimum 10% required
                       </p>
+
                     )}
 
                 </div>
@@ -344,16 +433,29 @@ export default function GoalPage() {
                     className="w-full border border-gray-300 bg-gray-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-black"
                     value={goal.uom}
                     onChange={(e) =>
-                      updateGoal(index, "uom", e.target.value)
+                      updateGoal(
+                        index,
+                        "uom",
+                        e.target.value
+                      )
                     }
                   >
 
-                    <option value="MIN">MIN</option>
-                    <option value="MAX">MAX</option>
+                    <option value="MIN">
+                      MIN
+                    </option>
+
+                    <option value="MAX">
+                      MAX
+                    </option>
+
                     <option value="TIMELINE">
                       TIMELINE
                     </option>
-                    <option value="ZERO">ZERO</option>
+
+                    <option value="ZERO">
+                      ZERO
+                    </option>
 
                   </select>
 
@@ -375,7 +477,9 @@ export default function GoalPage() {
             onClick={addGoal}
             className="inline-flex items-center justify-center whitespace-nowrap bg-black hover:bg-gray-800 transition text-white min-w-[180px] h-14 px-6 rounded-2xl font-semibold shadow-md text-lg"
           >
+
             + Add Goal
+
           </button>
 
           <button
@@ -387,7 +491,9 @@ export default function GoalPage() {
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
+
             Submit Goals
+
           </button>
 
         </div>
@@ -397,4 +503,5 @@ export default function GoalPage() {
     </main>
 
   );
+
 }
