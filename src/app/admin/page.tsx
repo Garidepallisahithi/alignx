@@ -184,7 +184,7 @@ export default function AdminPage() {
               Goal Status Distribution
             </h2>
 
-            <div className="h-[350px]">
+            <div className="h-[350px] w-full">
 
               <ResponsiveContainer width="100%" height="100%">
 
@@ -227,7 +227,7 @@ export default function AdminPage() {
               Department Risk Analysis
             </h2>
 
-            <div className="h-[350px]">
+            <div className="h-[350px] w-full">
 
               <ResponsiveContainer width="100%" height="100%">
 
