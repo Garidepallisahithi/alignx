@@ -27,21 +27,63 @@ export default function LoginPage() {
         <div className="space-y-4">
 
           <button
-            onClick={() => router.push("/employee")}
+
+            onClick={() => {
+
+              localStorage.setItem(
+              "user",
+               JSON.stringify({
+               id: "demo-user",
+               role: "EMPLOYEE",
+               name: "Demo Employee",
+             })
+          );
+
+              router.push("/employee");
+
+  }}
             className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
           >
             Employee Login
           </button>
 
           <button
-            onClick={() => router.push("/manager")}
+      
+           onClick={() => {
+
+              localStorage.setItem(
+              "user",
+               JSON.stringify({
+               id: "demo-manager",
+               role: "MANAGER",
+               name: "Demo Manager",
+              })
+           );
+
+               router.push("/manager");
+
+            }}
             className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
           >
             Manager Login
           </button>
 
           <button
-            onClick={() => router.push("/admin")}
+            onClick={() => router.push("/admin")}onClick={() => {
+
+               localStorage.setItem(
+               "user",
+                JSON.stringify({
+                id: "demo-admin",
+                role: "ADMIN",
+                name: "Demo Admin",
+              })
+              );
+
+              router.push("/admin");
+
+            }}
+
             className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
           >
             Admin Login
