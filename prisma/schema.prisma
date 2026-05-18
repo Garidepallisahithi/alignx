@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  ADMIN
+}
+
+enum GoalStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  LOCKED
+}
+
+enum CheckinStatus {
+  NOT_STARTED
+  ON_TRACK
+  COMPLETED
+}
+
+enum UomType {
+  MIN
+  MAX
+  TIMELINE
+  ZERO
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  department  String
+  role        Role
+  managerId   String?
+  createdAt   DateTime @default(now())
+  createdGoals Goal[]
+  approvals   Approval[]
+}
+
+model Goal {
+
+  id           String       @id @default(uuid())
+
+  title        String
+
+  description  String
+
+  target       Int
+
+  weightage    Int
+
+  uomType      UomType
+
+  status        GoalStatus
+
+  createdAt    DateTime     @default(now())
+
+  employeeId   String
+
+  employee     User         @relation(fields: [employeeId], references: [id])
+
+  checkins     Checkin[]
+
+  approvals    Approval[]
+
+}
+model Checkin {
+  id            String          @id @default(cuid())
+  quarter       String
+  planned       Float
+  actual        Float
+  status        CheckinStatus
+  comment       String?
+
+  goalId        String
+  goal          Goal @relation(fields: [goalId], references: [id])
+
+  createdAt     DateTime @default(now())
+}
+
+model Approval {
+  id            String      @id @default(cuid())
+  remarks       String?
+  approvedAt    DateTime?
+
+  managerId     String
+  manager       User @relation(fields: [managerId], references: [id])
+
+  goalId        String
+  goal          Goal @relation(fields: [goalId], references: [id])
+
+  createdAt     DateTime @default(now())
+}
+
+model AuditLog {
+  id            String    @id @default(cuid())
+  entityType    String
+  entityId      String
+  action        String
+  beforeData    Json?
+  afterData     Json?
+  changedBy     String
+
+  createdAt     DateTime @default(now())
+}
+
+model Notification {
+  id            String    @id @default(cuid())
+  title         String
+  message       String
+  isRead        Boolean   @default(false)
+
+  userId        String
+
+  createdAt     DateTime @default(now())
+}
+
+model Escalation {
+  id            String    @id @default(cuid())
+  type          String
+  level         Int
+  status        String
+
+  userId        String
+
+  createdAt     DateTime @default(now())
+}
