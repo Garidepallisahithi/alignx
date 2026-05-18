@@ -1,3 +1,4 @@
+
 import { prisma } from "../../../lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -7,82 +8,61 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    const { goals } = body;
+    const { goals, userId } = body;
 
-    // FIND FIRST EMPLOYEE USER
-
-    const employeeUser = await prisma.user.findFirst({
-
-      where: {
-        role: "EMPLOYEE",
-      },
-
-    });
-
-    // IF NO USER EXISTS
-
-    if (!employeeUser) {
+    if (!userId) {
 
       return NextResponse.json(
 
         {
+
           success: false,
-          message: "No employee user found",
+
+          message: "User session missing",
+
         },
 
         {
+
           status: 400,
+
         }
 
       );
 
     }
 
-    // CREATE GOALS
+    for (const goal of goals) {
 
-    const createdGoals = await Promise.all(
+      await prisma.goal.create({
 
-      goals.map((goal: any) =>
+        data: {
 
-        prisma.goal.create({
+          title: goal.title,
 
-          data: {
+          description: goal.description,
 
-            title: goal.title,
+          target: Number(goal.target),
 
-            description: goal.description,
+          weightage: Number(goal.weightage),
 
-            target: Number(goal.target),
+          uomType: goal.uom,
 
-            weightage: Number(goal.weightage),
+          status: "DRAFT",
 
-            uomType: goal.uom,
+          employeeId: userId,
 
-            status: "DRAFT",
+        },
 
-            employee: {
+      });
 
-              connect: {
-
-                id: employeeUser.id,
-
-              },
-
-            },
-
-          },
-
-        })
-
-      )
-
-    );
+    }
 
     return NextResponse.json({
 
       success: true,
 
-      goals: createdGoals,
+      message: "Goals saved successfully",
 
     });
 
@@ -95,12 +75,17 @@ export async function POST(req: Request) {
     return NextResponse.json(
 
       {
+
         success: false,
+
         message: "Failed to save goals",
+
       },
 
       {
+
         status: 500,
+
       }
 
     );
