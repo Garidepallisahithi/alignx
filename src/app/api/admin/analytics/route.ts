@@ -5,111 +5,57 @@ export async function GET() {
 
   try {
 
-    // TOTAL GOALS
-
-    const totalGoals = await prisma.goal.count();
-
-    // APPROVED GOALS
-
-    const approvedGoals = await prisma.goal.count({
-      where: {
-        status: "APPROVED",
-      },
-    });
-
-    // REJECTED GOALS
-
-    const rejectedGoals = await prisma.goal.count({
-      where: {
-        status: "REJECTED",
-      },
-    });
-
-    // PENDING GOALS
-
-    const pendingGoals = await prisma.goal.count({
-      where: {
-        status: "DRAFT",
-      },
-    });
-
-    // FETCH ALL GOALS
-
     const goals = await prisma.goal.findMany({
 
       include: {
+
         employee: true,
+
+      },
+
+      orderBy: {
+
+        createdAt: "desc",
+
       },
 
     });
 
-    // DEPARTMENT ANALYTICS
+    const approved = goals.filter(
 
-    const departmentMap: any = {};
+      (g) => g.status === "APPROVED"
 
-    goals.forEach((goal) => {
+    ).length;
 
-      const dept =
-        goal.employee?.department || "Unknown";
+    const pending = goals.filter(
 
-      if (!departmentMap[dept]) {
+      (g) => g.status === "SUBMITTED"
 
-        departmentMap[dept] = {
+    ).length;
 
-          department: dept,
+    const rejected = goals.filter(
 
-          approved: 0,
+      (g) => g.status === "REJECTED"
 
-          pending: 0,
-
-          rejected: 0,
-
-        };
-
-      }
-
-      if (goal.status === "APPROVED") {
-
-        departmentMap[dept].approved += 1;
-
-      }
-
-      else if (goal.status === "REJECTED") {
-
-        departmentMap[dept].rejected += 1;
-
-      }
-
-      else {
-
-        departmentMap[dept].pending += 1;
-
-      }
-
-    });
-
-    const departmentData =
-      Object.values(departmentMap);
+    ).length;
 
     return NextResponse.json({
 
       success: true,
 
-      analytics: {
+      goals,
 
-        totalGoals,
+      stats: {
 
-        approvedGoals,
+        total: goals.length,
 
-        rejectedGoals,
+        approved,
 
-        pendingGoals,
+        pending,
+
+        rejected,
 
       },
-
-      departmentData,
-
-      goals,
 
     });
 
@@ -117,7 +63,7 @@ export async function GET() {
 
   catch (error) {
 
-    console.log(error);
+    console.log("ADMIN ANALYTICS ERROR:", error);
 
     return NextResponse.json(
 

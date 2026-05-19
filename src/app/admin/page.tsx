@@ -33,6 +33,8 @@ export default function AdminPage() {
   const [goals, setGoals] =
     useState<any[]>([]);
 
+  const [loading, setLoading] = useState(true);
+
   // FETCH ANALYTICS
 
   const fetchAnalytics = async () => {
@@ -66,7 +68,37 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+
+    const fetchAnalytics = async () => {
+
+      try {
+
+        const response = await fetch("/api/admin/analytics");
+
+        const data = await response.json();
+
+        console.log("Analytics Response:", data);
+
+        setAnalytics(data);
+
+      }
+
+      catch (error) {
+
+        console.log("Analytics Fetch Error:", error);
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
     fetchAnalytics();
+
   }, []);
 
   if (!analytics) {
