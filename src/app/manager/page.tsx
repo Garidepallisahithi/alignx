@@ -32,7 +32,7 @@ export default function ManagerPage() {
 
     try {
 
-      const res = await fetch("/api/goals/list");
+      const res = await fetch("/api/manager/goals");
 
       const data = await res.json();
 
