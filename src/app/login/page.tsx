@@ -34,7 +34,7 @@ export default function LoginPage() {
 
                 JSON.stringify({
 
-                  id: "demo-user",
+                  id: "emp1",
 
                   role: "EMPLOYEE",
 
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
                 JSON.stringify({
 
-                  id: "demo-manager",
+                  id: "mgr1",
 
                   role: "MANAGER",
 
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
                 JSON.stringify({
 
-                  id: "demo-admin",
+                  id: "admin1",
 
                   role: "ADMIN",
 
