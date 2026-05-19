@@ -26,23 +26,47 @@ export default function ManagerPage() {
     useState("ALL");
   const [loading, setLoading] = useState(true);
 
-  // FETCH GOALS
+  useEffect(() => {
+
+    const fetchGoals = async () => {
+
+      try {
+
+        const response = await fetch("/api/manager/goals");
+
+        const data = await response.json();
+
+        console.log(data);
+
+        setGoals(data.goals || []);
+
+      }
+
+      catch (error) {
+
+        console.log(error);
+
+        setGoals([]);
+
+      }
+
+    };
+
+    fetchGoals();
+
+  }, []);
 
   const fetchGoals = async () => {
 
     try {
 
-      const res = await fetch("/api/manager/goals");
+      const response = await fetch("/api/manager/goals");
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (data.success) {
+      console.log(data);
 
-        setGoals(data.goals);
-
-      }
-
-      setLoading(false);
+      setGoals(data.goals || []);
 
     }
 
@@ -50,17 +74,11 @@ export default function ManagerPage() {
 
       console.log(error);
 
-      setLoading(false);
+      setGoals([]);
 
     }
 
   };
-
-  useEffect(() => {
-
-    fetchGoals();
-
-  }, []);
 
   // NORMALIZE TITLE CASE
 

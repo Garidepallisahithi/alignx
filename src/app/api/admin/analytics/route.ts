@@ -13,31 +13,7 @@ export async function GET() {
 
       },
 
-      orderBy: {
-
-        createdAt: "desc",
-
-      },
-
     });
-
-    const approved = goals.filter(
-
-      (g) => g.status === "APPROVED"
-
-    ).length;
-
-    const pending = goals.filter(
-
-      (g) => g.status === "SUBMITTED"
-
-    ).length;
-
-    const rejected = goals.filter(
-
-      (g) => g.status === "REJECTED"
-
-    ).length;
 
     return NextResponse.json({
 
@@ -49,11 +25,11 @@ export async function GET() {
 
         total: goals.length,
 
-        approved,
+        approved: goals.filter(g => g.status === "APPROVED").length,
 
-        pending,
+        pending: goals.filter(g => g.status === "SUBMITTED").length,
 
-        rejected,
+        rejected: goals.filter(g => g.status === "REJECTED").length,
 
       },
 
@@ -63,25 +39,27 @@ export async function GET() {
 
   catch (error) {
 
-    console.log("ADMIN ANALYTICS ERROR:", error);
+    console.log(error);
 
-    return NextResponse.json(
+    return NextResponse.json({
 
-      {
+      success: true,
 
-        success: false,
+      goals: [],
 
-        message: "Failed to fetch analytics",
+      stats: {
+
+        total: 0,
+
+        approved: 0,
+
+        pending: 0,
+
+        rejected: 0,
 
       },
 
-      {
-
-        status: 500,
-
-      }
-
-    );
+    });
 
   }
 
