@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 
           uomType: goal.uom,
 
-          status: "DRAFT",
+          status: "SUBMITTED",
 
           employeeId: userId,
 
